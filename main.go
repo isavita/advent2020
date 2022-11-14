@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -15,7 +17,93 @@ func main() {
 	fmt.Printf("\nday2\n answer1: %d\n answer2: %d", day2Task1(), day2Task2())
 	fmt.Printf("\nday3\n answer1: %d\n answer2: %d", day3Task1(), day3Task2())
 	fmt.Printf("\nday4\n answer1: %d\n answer2: %d", day4Task1(), day4Task2())
+	fmt.Printf("\nday5\n answer1: %d\n answer2: %d", day5Task1(), day5Task2())
 }
+
+func day5Task2() int {
+	input := readInput("assets/input5.txt")
+	lines := strings.Split(input, "\n")
+	seats := []int{}
+	for _, line := range lines {
+		symbols := strings.Split(line, "")
+		min, max := 0, 127
+		for _, symbol := range symbols[:7] {
+			if symbol == "F" {
+				max = max - int(math.Ceil(float64(max-min)/2.0))
+			} else {
+				min = int(math.Ceil(float64(max+min) / 2.0))
+			}
+		}
+		row := max
+		if symbols[6] == "F" {
+			row = min
+		}
+		min, max = 0, 7
+		for _, symbol := range symbols[7:] {
+			if symbol == "L" {
+				max = max - int(math.Ceil(float64(max-min)/2.0))
+			} else {
+				min = int(math.Ceil(float64(max+min) / 2.0))
+			}
+		}
+		column := max
+		if symbols[6] == "L" {
+			column = min
+		}
+		seat := row*8 + column
+		seats = append(seats, seat)
+	}
+
+	sort.Ints(seats)
+
+	for i := 0; i < len(seats)-2; i++ {
+		if seats[i]+2 == seats[i+1] {
+			return seats[i] + 1
+		}
+	}
+
+	return -1
+}
+
+func day5Task1() int {
+	input := readInput("assets/input5.txt")
+	lines := strings.Split(input, "\n")
+	maxSeat := -1
+	for _, line := range lines {
+		symbols := strings.Split(line, "")
+		min, max := 0, 127
+		for _, symbol := range symbols[:7] {
+			if symbol == "F" {
+				max = max - int(math.Ceil(float64(max-min)/2.0))
+			} else {
+				min = int(math.Ceil(float64(max+min) / 2.0))
+			}
+		}
+		row := max
+		if symbols[6] == "F" {
+			row = min
+		}
+		min, max = 0, 7
+		for _, symbol := range symbols[7:] {
+			if symbol == "L" {
+				max = max - int(math.Ceil(float64(max-min)/2.0))
+			} else {
+				min = int(math.Ceil(float64(max+min) / 2.0))
+			}
+		}
+		column := max
+		if symbols[6] == "L" {
+			column = min
+		}
+		seat := row*8 + column
+		if maxSeat < seat {
+			maxSeat = seat
+		}
+	}
+
+	return maxSeat
+}
+
 func day4Task2() int {
 	input := readInput("assets/input4.txt")
 	input = strings.Replace(input, "\n", " ", -1)
