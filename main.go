@@ -18,6 +18,50 @@ func main() {
 	fmt.Printf("\nday3\n answer1: %d\n answer2: %d", day3Task1(), day3Task2())
 	fmt.Printf("\nday4\n answer1: %d\n answer2: %d", day4Task1(), day4Task2())
 	fmt.Printf("\nday5\n answer1: %d\n answer2: %d", day5Task1(), day5Task2())
+	fmt.Printf("\nday6\n answer1: %d\n answer2: %d", day6Task1(), day6Task2())
+}
+
+func day6Task2() int {
+	input := readInput("assets/input6.txt")
+	yesCount := 0
+	for _, group := range strings.Split(input, "\n\n") {
+		curLetters := ""
+		for i, answers := range strings.Split(group, "\n") {
+			if i == 0 {
+				curLetters = answers
+				continue
+			}
+			letters := ""
+			for _, letter := range answers {
+				if strings.ContainsRune(curLetters, letter) {
+					letters = letters + string(letter)
+				}
+			}
+			curLetters = letters
+		}
+		yesCount += len(curLetters)
+	}
+
+	return yesCount
+}
+
+func day6Task1() int {
+	input := readInput("assets/input6.txt")
+	yesCount := 0
+	for _, group := range strings.Split(input, "\n\n") {
+		curLetters := ""
+		for _, answers := range strings.Split(group, "\n") {
+			for _, letter := range answers {
+				if strings.ContainsRune(curLetters, letter) {
+					continue
+				}
+				curLetters = curLetters + string(letter)
+				yesCount++
+			}
+		}
+	}
+
+	return yesCount
 }
 
 func day5Task2() int {
@@ -56,7 +100,7 @@ func day5Task2() int {
 
 	sort.Ints(seats)
 
-	for i := 0; i < len(seats)-2; i++ {
+	for i := 0; i < len(seats)-1; i++ {
 		if seats[i]+2 == seats[i+1] {
 			return seats[i] + 1
 		}
