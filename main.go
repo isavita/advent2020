@@ -19,6 +19,89 @@ func main() {
 	fmt.Printf("\nday4\n answer1: %d\n answer2: %d", day4Task1(), day4Task2())
 	fmt.Printf("\nday5\n answer1: %d\n answer2: %d", day5Task1(), day5Task2())
 	fmt.Printf("\nday6\n answer1: %d\n answer2: %d", day6Task1(), day6Task2())
+	fmt.Printf("\nday7\n answer1: %d\n answer2: %d", day7Task1(), day7Task2())
+}
+
+func day7Task2() int {
+	input := readInput("assets/input7.txt")
+	input = strings.ReplaceAll(input, "bags", "bag")
+	input = strings.ReplaceAll(input, " bag", "")
+	input = strings.TrimSuffix(input, ".")
+	rules := strings.Split(input, ".\n")
+	mainBags := make(map[string]map[string]int, len(rules))
+	for _, rule := range rules {
+		sp := strings.Split(rule, " contain ")
+		rBags := strings.Split(sp[1], ", ")
+		mainBags[sp[0]] = make(map[string]int, len(rBags))
+		for _, bags := range rBags {
+			if bags == "no other" {
+			} else if val, err := strconv.Atoi(string(bags[0])); err == nil {
+				key := strings.TrimSpace(bags[1:])
+				mainBags[sp[0]][key] = val
+			}
+		}
+	}
+
+	var sumWeights func(string) int
+	sumWeights = func(target string) int {
+		total := 0
+		for bag, n := range mainBags[target] {
+			total += n * (1 + sumWeights(bag))
+		}
+
+		return total
+	}
+
+	return sumWeights("shiny gold")
+}
+
+func day7Task1() int {
+	input := readInput("assets/input7.txt")
+	input = strings.ReplaceAll(input, "bags", "bag")
+	input = strings.ReplaceAll(input, " bag", "")
+	input = strings.TrimSuffix(input, ".")
+	rules := strings.Split(input, ".\n")
+	mainBags := make(map[string]map[string]int, len(rules))
+	for _, rule := range rules {
+		sp := strings.Split(rule, " contain ")
+		rBags := strings.Split(sp[1], ", ")
+		mainBags[sp[0]] = make(map[string]int, len(rBags))
+		for _, bags := range rBags {
+			if bags == "no other" {
+			} else if val, err := strconv.Atoi(string(bags[0])); err == nil {
+				key := strings.TrimSpace(bags[1:])
+				mainBags[sp[0]][key] = val
+			}
+		}
+	}
+
+	var hasPath func(string, string) bool
+	hasPath = func(start, end string) bool {
+		if start == end {
+			return true
+		}
+
+		visited := map[string]bool{start: true}
+		for k := range mainBags[start] {
+			if !visited[k] {
+				if hasPath(k, end) {
+					return true
+				}
+			}
+		}
+
+		return false
+	}
+
+	count := 0
+	end := "shiny gold"
+	for start := range mainBags {
+		if start != end && hasPath(start, end) {
+			count++
+		}
+	}
+
+	return count
 }
 
 func day6Task2() int {
