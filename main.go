@@ -21,6 +21,95 @@ func main() {
 	fmt.Printf("\nday6\n answer1: %d\n answer2: %d", day6Task1(), day6Task2())
 	fmt.Printf("\nday7\n answer1: %d\n answer2: %d", day7Task1(), day7Task2())
 	fmt.Printf("\nday8\n answer1: %d\n answer2: %d", day8Task1(), day8Task2())
+	fmt.Printf("\nday9\n answer1: %d\n answer2: %d", day9Task1(), day9Task2())
+
+}
+
+func day9Task2() int64 {
+	input := readInput("assets/input9.txt")
+	lines := strings.Split(input, "\n")
+	numbers := make([]int64, 0, len(lines))
+	for _, line := range lines {
+		if n, err := strconv.ParseInt(line, 10, 64); err == nil {
+			numbers = append(numbers, n)
+		}
+	}
+
+	num := day9Task1()
+	set := findContiguousSet(numbers, num)
+	var min int64 = math.MaxInt64
+	var max int64 = math.MinInt64
+	for _, n := range set {
+		if max < n {
+			max = n
+		}
+		if min > n {
+			min = n
+		}
+	}
+	return min + max
+}
+
+func findContiguousSet(numbers []int64, num int64) []int64 {
+	sum := func(nums *[]int64) int64 {
+		var s int64
+		for _, n := range *nums {
+			s += n
+		}
+		return s
+	}
+
+	set := []int64{}
+
+	for i := 0; i < len(numbers)-1; i++ {
+		set = []int64{}
+		set = append(set, numbers[i])
+		for j := i + 1; j < len(numbers); j++ {
+			val := sum(&set)
+			if len(set) > 1 && val == num {
+				i = len(numbers)
+				break
+			} else if val > num {
+				break
+			}
+			set = append(set, numbers[j])
+		}
+	}
+
+	return set
+}
+
+func day9Task1() int64 {
+	preamble := 25
+	input := readInput("assets/input9.txt")
+	lines := strings.Split(input, "\n")
+	numbers := make([]int64, 0, len(lines))
+	for _, line := range lines {
+		if n, err := strconv.ParseInt(line, 10, 64); err == nil {
+			numbers = append(numbers, n)
+		}
+	}
+
+	var num int64 = -1
+	for i, j := preamble, 0; i < len(numbers); i++ {
+		if !isSumOfTwo(numbers[j:i], numbers[i]) {
+			num = numbers[i]
+			break
+		}
+		j++
+	}
+	return num
+}
+
+func isSumOfTwo(numbers []int64, n int64) bool {
+	for i := 0; i < len(numbers); i++ {
+		for j := 0; j < len(numbers); j++ {
+			if i != j && numbers[i]+numbers[j] == n {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func day8Task2() int {
