@@ -20,6 +20,66 @@ func main() {
 	fmt.Printf("\nday5\n answer1: %d\n answer2: %d", day5Task1(), day5Task2())
 	fmt.Printf("\nday6\n answer1: %d\n answer2: %d", day6Task1(), day6Task2())
 	fmt.Printf("\nday7\n answer1: %d\n answer2: %d", day7Task1(), day7Task2())
+	fmt.Printf("\nday8\n answer1: %d\n answer2: %d", day8Task1(), day8Task2())
+}
+
+func day8Task2() int {
+	input := readInput("assets/input8.txt")
+	lines := strings.Split(input, "\n")
+	// finded by runing the program N times and replace on `jmp` or `nop`
+	// and check if still breaks
+	breakIndex := 266
+	lines[breakIndex] = strings.Replace(lines[breakIndex], "jmp", "nop", 1)
+	accumulator := 0
+	for i := 0; i < len(lines); i++ {
+		ins := strings.Split(lines[i], " ")
+		op, val := ins[0], ins[1]
+		switch op {
+		case "acc":
+			if n, err := strconv.Atoi(val); err == nil {
+				accumulator += n
+			}
+		case "jmp":
+			if n, err := strconv.Atoi(val); err == nil {
+				i += (n - 1)
+			}
+		case "nop":
+		default:
+			log.Fatalf("Unknown instruction %s", op)
+		}
+	}
+
+	return accumulator
+}
+
+func day8Task1() int {
+	input := readInput("assets/input8.txt")
+	lines := strings.Split(input, "\n")
+	accumulator := 0
+	hasEval := map[int]bool{}
+	for i := 0; i < len(lines); i++ {
+		if hasEval[i] {
+			break
+		}
+		hasEval[i] = true
+		ins := strings.Split(lines[i], " ")
+		op, val := ins[0], ins[1]
+		switch op {
+		case "acc":
+			if n, err := strconv.Atoi(val); err == nil {
+				accumulator += n
+			}
+		case "jmp":
+			if n, err := strconv.Atoi(val); err == nil {
+				i += (n - 1)
+			}
+		case "nop":
+		default:
+			log.Fatalf("Unknown instruction %s", op)
+		}
+	}
+
+	return accumulator
 }
 
 func day7Task2() int {
