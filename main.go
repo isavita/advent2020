@@ -22,7 +22,59 @@ func main() {
 	fmt.Printf("\nday7\n answer1: %d\n answer2: %d", day7Task1(), day7Task2())
 	fmt.Printf("\nday8\n answer1: %d\n answer2: %d", day8Task1(), day8Task2())
 	fmt.Printf("\nday9\n answer1: %d\n answer2: %d", day9Task1(), day9Task2())
+	fmt.Printf("\nday10\n answer1: %d\n answer2: %d", day10Task1(), day10Task2())
+}
 
+func day10Task2() int {
+	input := readInput("assets/input10.txt")
+	lines := strings.Split(input, "\n")
+	adapters := make([]int, 0, len(lines))
+	for _, line := range lines {
+		if n, err := strconv.Atoi(line); err == nil {
+			adapters = append(adapters, n)
+		}
+	}
+	sort.Ints(adapters)
+
+	pathsCounts := map[int]int{0: 1}
+	for _, adapter := range adapters {
+		pathsCount := 0
+		for _, i := range []int{1, 2, 3} {
+			count, ok := pathsCounts[adapter-i]
+			if !ok {
+				count = 0
+			}
+			pathsCount += count
+		}
+		pathsCounts[adapter] += pathsCount
+	}
+
+	lastPath := adapters[len(adapters)-1]
+	return pathsCounts[lastPath]
+}
+
+func day10Task1() int {
+	input := readInput("assets/input10.txt")
+	lines := strings.Split(input, "\n")
+	adapters := make([]int, 0, len(lines))
+	for _, line := range lines {
+		if n, err := strconv.Atoi(line); err == nil {
+			adapters = append(adapters, n)
+		}
+	}
+	sort.Ints(adapters)
+	oneJoltDiff, threeJoltDiff := 1, 1
+	for i := 0; i < len(adapters)-1; i++ {
+		if adapters[i]+3 >= adapters[i+1] {
+			if adapters[i]+1 == adapters[i+1] {
+				oneJoltDiff++
+			} else if adapters[i]+3 == adapters[i+1] {
+				threeJoltDiff++
+			}
+		}
+	}
+
+	return oneJoltDiff * threeJoltDiff
 }
 
 func day9Task2() int64 {
