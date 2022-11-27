@@ -23,6 +23,329 @@ func main() {
 	fmt.Printf("\nday8\n answer1: %d\n answer2: %d", day8Task1(), day8Task2())
 	fmt.Printf("\nday9\n answer1: %d\n answer2: %d", day9Task1(), day9Task2())
 	fmt.Printf("\nday10\n answer1: %d\n answer2: %d", day10Task1(), day10Task2())
+	fmt.Printf("\nday11\n answer1: %d\n answer2: %d", day11Task1(), day11Task2())
+}
+
+func day11Task2() int {
+	input := readInput("assets/input11.txt")
+	places := map[int]map[int]string{}
+	for i, line := range strings.Split(input, "\n") {
+		places[i] = map[int]string{}
+		for j, ch := range strings.Split(line, "") {
+			places[i][j] = ch
+		}
+	}
+
+	allVisibleAdjacentsEmpty := func(plcs *map[int]map[int]string, row, col int) bool {
+		limit := len((*plcs)[0])
+		for i := row - 1; i <= row+1; i++ {
+			if i < 0 || i == limit {
+				continue
+			}
+
+			for j := col - 1; j <= col+1; j++ {
+				if j < 0 || j == limit || (row == i && col == j) {
+					continue
+				}
+
+				if i == row && j == col+1 {
+					for j1 := j; j1 < limit; j1++ {
+						if (*plcs)[i][j1] == "#" {
+							return false
+						} else if (*plcs)[i][j1] == "L" {
+							break
+						}
+					}
+				} else if i == row && j == col-1 {
+					for j1 := j; j1 >= 0; j1-- {
+						if (*plcs)[i][j1] == "#" {
+							return false
+						} else if (*plcs)[i][j1] == "L" {
+							break
+						}
+					}
+				} else if i == row+1 && j == col {
+					for i1 := i; i1 < limit; i1++ {
+						if (*plcs)[i1][j] == "#" {
+							return false
+						} else if (*plcs)[i1][j] == "L" {
+							break
+						}
+					}
+				} else if i == row-1 && j == col {
+					for i1 := i; i1 >= 0; i1-- {
+						if (*plcs)[i1][j] == "#" {
+							return false
+						} else if (*plcs)[i1][j] == "L" {
+							break
+						}
+					}
+				} else if i == row+1 && j == col+1 {
+					for i1, j1 := i, j; i1 < limit && j1 < limit; i1, j1 = i1+1, j1+1 {
+						if (*plcs)[i1][j1] == "#" {
+							return false
+						} else if (*plcs)[i1][j1] == "L" {
+							break
+						}
+					}
+				} else if i == row-1 && j == col-1 {
+					for i1, j1 := i, j; i1 >= 0 && j1 >= 0; i1, j1 = i1-1, j1-1 {
+						if (*plcs)[i1][j1] == "#" {
+							return false
+						} else if (*plcs)[i1][j1] == "L" {
+							break
+						}
+					}
+				} else if i == row+1 && j == col-1 {
+					for i1, j1 := i, j; i1 < limit && j1 >= 0; i1, j1 = i1+1, j1-1 {
+						if (*plcs)[i1][j1] == "#" {
+							return false
+						} else if (*plcs)[i1][j1] == "L" {
+							break
+						}
+					}
+				} else if i == row-1 && j == col+1 {
+					for i1, j1 := i, j; i1 >= 0 && j1 < limit; i1, j1 = i1-1, j1+1 {
+						if (*plcs)[i1][j1] == "#" {
+							return false
+						} else if (*plcs)[i1][j1] == "L" {
+							break
+						}
+					}
+				}
+
+			}
+		}
+		return true
+	}
+	atLeastN := func(plcs *map[int]map[int]string, row, col, n int, sym string) bool {
+		limit := len((*plcs)[0])
+		count := 0
+		for i := row - 1; i <= row+1; i++ {
+			if i < 0 || i == limit {
+				continue
+			}
+
+			for j := col - 1; j <= col+1; j++ {
+				if (j < 0 || j == limit) || (i == row && j == col) {
+					continue
+				}
+
+				if i == row && j == col+1 {
+					for j1 := j; j1 < limit; j1++ {
+						if (*plcs)[i][j1] == sym {
+							count++
+							break
+						} else if (*plcs)[i][j1] != "." {
+							break
+						}
+					}
+				} else if i == row && j == col-1 {
+					for j1 := j; j1 >= 0; j1-- {
+						if (*plcs)[i][j1] == sym {
+							count++
+							break
+						} else if (*plcs)[i][j1] != "." {
+							break
+						}
+					}
+				} else if i == row+1 && j == col {
+					for i1 := i; i1 < limit; i1++ {
+						if (*plcs)[i1][j] == sym {
+							count++
+							break
+						} else if (*plcs)[i1][j] != "." {
+							break
+						}
+					}
+				} else if i == row-1 && j == col {
+					for i1 := i; i1 >= 0; i1-- {
+						if (*plcs)[i1][j] == sym {
+							count++
+							break
+						} else if (*plcs)[i1][j] != "." {
+							break
+						}
+					}
+				} else if i == row+1 && j == col+1 {
+					for i1, j1 := i, j; i1 < limit && j1 < limit; i1, j1 = i1+1, j1+1 {
+						if (*plcs)[i1][j1] == sym {
+							count++
+							break
+						} else if (*plcs)[i1][j1] != "." {
+							break
+						}
+					}
+				} else if i == row-1 && j == col-1 {
+					for i1, j1 := i, j; i1 >= 0 && j1 >= 0; i1, j1 = i1-1, j1-1 {
+						if (*plcs)[i1][j1] == sym {
+							count++
+							break
+						} else if (*plcs)[i1][j1] != "." {
+							break
+						}
+					}
+				} else if i == row+1 && j == col-1 {
+					for i1, j1 := i, j; i1 < limit && j1 >= 0; i1, j1 = i1+1, j1-1 {
+						if (*plcs)[i1][j1] == sym {
+							count++
+							break
+						} else if (*plcs)[i1][j1] != "." {
+							break
+						}
+					}
+				} else if i == row-1 && j == col+1 {
+					for i1, j1 := i, j; i1 >= 0 && j1 < limit; i1, j1 = i1-1, j1+1 {
+						if (*plcs)[i1][j1] == sym {
+							count++
+							break
+						} else if (*plcs)[i1][j1] != "." {
+							break
+						}
+					}
+				}
+			}
+		}
+
+		return count >= n
+	}
+
+	allSame := func(plcs1 *map[int]map[int]string, plcs2 *map[int]map[int]string) bool {
+		for i := 0; i < len(*plcs1); i++ {
+			for j := 0; j < len((*plcs1)[i]); j++ {
+				if (*plcs1)[i][j] != (*plcs2)[i][j] {
+					return false
+				}
+			}
+		}
+		return true
+	}
+
+	for {
+		newPlaces := map[int]map[int]string{}
+		for i := 0; i < len(places); i++ {
+			newPlaces[i] = map[int]string{}
+			for j := 0; j < len(places[i]); j++ {
+				if places[i][j] == "L" && allVisibleAdjacentsEmpty(&places, i, j) {
+					newPlaces[i][j] = "#"
+				} else if places[i][j] == "#" && atLeastN(&places, i, j, 5, "#") {
+					newPlaces[i][j] = "L"
+				} else {
+					newPlaces[i][j] = places[i][j]
+				}
+			}
+		}
+
+		if allSame(&places, &newPlaces) {
+			break
+		}
+		places = newPlaces
+	}
+
+	occupied := 0
+	for i := 0; i < len(places); i++ {
+		for j := 0; j < len(places[i]); j++ {
+			if places[i][j] == "#" {
+				occupied++
+			}
+		}
+	}
+
+	return occupied
+}
+
+func day11Task1() int {
+	input := readInput("assets/input11.txt")
+	places := map[int]map[int]string{}
+	for i, line := range strings.Split(input, "\n") {
+		places[i] = map[int]string{}
+		for j, ch := range strings.Split(line, "") {
+			places[i][j] = ch
+		}
+	}
+
+	allAdjacentEmpty := func(plcs *map[int]map[int]string, row, col int) bool {
+		limit := len((*plcs)[0])
+		for i := row - 1; i <= row+1; i++ {
+			if i < 0 || i == limit {
+				continue
+			}
+
+			for j := col - 1; j <= col+1; j++ {
+				if (j < 0 || j == limit) || (i == row && j == col) {
+					continue
+				}
+				if (*plcs)[i][j] == "#" {
+					return false
+				}
+			}
+		}
+
+		return true
+	}
+	atLeastN := func(plcs *map[int]map[int]string, row, col, n int, sym string) bool {
+		limit := len((*plcs)[0])
+		count := 0
+		for i := row - 1; i <= row+1; i++ {
+			if i < 0 || i == limit {
+				continue
+			}
+
+			for j := col - 1; j <= col+1; j++ {
+				if (j < 0 || j == limit) || (i == row && j == col) {
+					continue
+				}
+				if (*plcs)[i][j] == sym {
+					count++
+				}
+			}
+		}
+
+		return count >= n
+	}
+
+	allSame := func(plcs1 *map[int]map[int]string, plcs2 *map[int]map[int]string) bool {
+		for i := 0; i < len(*plcs1); i++ {
+			for j := 0; j < len((*plcs1)[i]); j++ {
+				if (*plcs1)[i][j] != (*plcs2)[i][j] {
+					return false
+				}
+			}
+		}
+		return true
+	}
+
+	for {
+		newPlaces := map[int]map[int]string{}
+		for i := 0; i < len(places); i++ {
+			newPlaces[i] = map[int]string{}
+			for j := 0; j < len(places[i]); j++ {
+				if places[i][j] == "L" && allAdjacentEmpty(&places, i, j) {
+					newPlaces[i][j] = "#"
+				} else if places[i][j] == "#" && atLeastN(&places, i, j, 4, "#") {
+					newPlaces[i][j] = "L"
+				} else {
+					newPlaces[i][j] = places[i][j]
+				}
+			}
+		}
+
+		if allSame(&places, &newPlaces) {
+			break
+		}
+		places = newPlaces
+	}
+
+	occupied := 0
+	for i := 0; i < len(places); i++ {
+		for j := 0; j < len(places[i]); j++ {
+			if places[i][j] == "#" {
+				occupied++
+			}
+		}
+	}
+
+	return occupied
 }
 
 func day10Task2() int {
