@@ -18,27 +18,16 @@ func main() {
 func solve(input string) int {
 	graph, messages := parseInput(input)
 
-	// these are the dependencies of rules 8 & 11 (which are the only dependencies
-	// of rule 0). fill in the resolved fields for these graph nodes
-	// b/c these definitions are not circular (downstream of changes), they will
-	// not infinite loop
 	fillInGraph(graph, 42)
 	fillInGraph(graph, 31)
 
-	// generate regexp strings that will be used to match against rules 8 and 11
-	// and ultimate match rule 0
 	part42 := fmt.Sprintf("(%s)", strings.Join(graph[42].resolved, "|"))
 	part31 := fmt.Sprintf("(%s)", strings.Join(graph[31].resolved, "|"))
 
-	// rule 8 is essentially 1 or more instances of rule 42
 	rule8String := fmt.Sprintf("(%s)+", part42)
 
-	// note: i'm unaware of how to make two regexp portions have the same number
-	// of segments, so I made this helper function that changes that number
-	// then I just run it ten times because that should be large enough to cover
-	// any of the rules in the input...
 	makeRegexp := func(num int) *regexp.Regexp {
-		// rule 11 is an equal number of 42 and 31 rules
+
 		return regexp.MustCompile(fmt.Sprintf("^%s%s{%d}%s{%d}$", rule8String, part42, num, part31, num))
 	}
 
@@ -58,15 +47,10 @@ func solve(input string) int {
 
 func fillInGraph(graph map[int]*rule, entry int) []string {
 	if len(graph[entry].resolved) != 0 {
-		// return a copy of resolved otherwise there's all kinds of side effect errors
 		return append([]string{}, graph[entry].resolved...)
 	}
 
-	// iterate through options, resolve children and append resolved paths
-	// for the current entry point
 	for _, option := range graph[entry].options {
-		// this will be all permutations generated from recursive calls to fillInGraph
-		// Note: there's probably a cleaner algorithm to do this kind of perm generation...
 		resolved := []string{""}
 		for _, entryPoint := range option {
 			nestedResolveVals := fillInGraph(graph, entryPoint)
@@ -89,7 +73,6 @@ type rule struct {
 	options  [][]int
 }
 
-// Stringer interface for debugging
 func (r rule) String() string {
 	var ans string
 	ans += fmt.Sprintf("OPTIONS:  %v\n", r.options)
