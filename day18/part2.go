@@ -14,28 +14,16 @@ func main() {
 		fmt.Println("Error reading from file:", err)
 	}
 	input := strings.TrimSpace(string(file))
-	ans := part2(input)
+	ans := solve(input)
 	fmt.Println(ans)
 }
 
-func part1(input string) int {
-	parsed := parseInput(input)
-
-	var total int
-	for _, line := range parsed {
-
-		total += doMaths(line, calcFlatSlicePart1)
-	}
-
-	return total
-}
-
-func part2(input string) int {
+func solve(input string) int {
 	lines := parseInput(input)
 	var total int
 
 	for _, line := range lines {
-		total += doMaths(line, calcFlatSlicePart2)
+		total += doMaths(line, calcFlatSlicePart)
 	}
 
 	return total
@@ -98,7 +86,7 @@ func calcFlatSlicePart1(input []string) string {
 	return toString(result)
 }
 
-func calcFlatSlicePart2(input []string) string {
+func calcFlatSlicePart(input []string) string {
 	for _, v := range input {
 		if v == "(" || v == ")" {
 			panic(fmt.Sprintf("unexpected paren in flat input, %v", input))
